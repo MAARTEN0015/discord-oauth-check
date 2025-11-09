@@ -2,7 +2,8 @@ const CLIENT_ID = "1437084007916507297";
 const REDIRECT_URI = "https://maarten0015.github.io/discord-oauth-check/";
 const SCOPES = "identify guilds";
 const REQUIRED_GUILD_ID = "1400209133634060439";
-const GAME_URL = "https://moomoo.io"; // game
+const GAME_URL = "https://moomoo.io";
+
 
 function getAccessTokenFromHash() {
     const hash = window.location.hash;
@@ -23,6 +24,7 @@ async function checkGuildMembership(token) {
         });
         const guilds = await res.json();
         if (guilds.some(g => g.id === REQUIRED_GUILD_ID)) {
+            window.history.replaceState({}, document.title, REDIRECT_URI);
             window.location.href = GAME_URL;
         } else {
             alert("You must join the Discord server first: https://discord.gg/wRXWfFJ4");
