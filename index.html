@@ -1,10 +1,10 @@
 const CLIENT_ID = "1437084007916507297";
 const REDIRECT_URI = "https://maarten0015.github.io/discord-oauth-check/";
 const SCOPES = "identify guilds";
-const REQUIRED_GUILD_ID = "1400209133634060439";
+const REQUIRED_GUILD_ID = "1400209133634060439"; // Replace with your actual server ID
 const GAME_URL = "https://moomoo.io";
 
-
+// Extract token from URL hash
 function getAccessTokenFromHash() {
     const hash = window.location.hash;
     if (!hash) return null;
@@ -12,11 +12,13 @@ function getAccessTokenFromHash() {
     return params.get("access_token");
 }
 
+// Redirect to Discord OAuth if no token
 function redirectToDiscordAuth() {
     const url = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${encodeURIComponent(SCOPES)}`;
     window.location.href = url;
 }
 
+// Check if user is in the Discord server
 async function checkGuildMembership(token) {
     try {
         const res = await fetch("https://discord.com/api/users/@me/guilds", {
@@ -24,17 +26,20 @@ async function checkGuildMembership(token) {
         });
         const guilds = await res.json();
         if (guilds.some(g => g.id === REQUIRED_GUILD_ID)) {
+            // Remove token from URL so it's not visible
             window.history.replaceState({}, document.title, REDIRECT_URI);
+            // Redirect to the game
             window.location.href = GAME_URL;
         } else {
             alert("You must join the Discord server first: https://discord.gg/wRXWfFJ4");
         }
     } catch (err) {
-        alert("Error checking server membership.");
+        alert("Error checking Discord server membership.");
         console.error(err);
     }
 }
 
+// Main flow
 const token = getAccessTokenFromHash();
 if (token) {
     checkGuildMembership(token);
